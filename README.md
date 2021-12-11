@@ -10,8 +10,8 @@ Hope to get those fxxking things done soon! :)
 
 # Phase I: Login Page
 
-* Success to login
+* **Success to login**
 
-**session.post(xx,xx,xx)**:
+    **session.post(xx,xx,xx)**:
 
-The first parameter is a url about the login page's security check other than the original login page!
+    The first parameter is a url about the login page's security check other than the original login page!
