@@ -3,5 +3,7 @@ This repo is related to the web crawler which will be used to the final project 
 
 # Phase I: Login Page
 
-* Fail to login
-* Success to get the text which is the html code of the login page
+* Success to login
+
+session.post(xx,xx,xx)
+The first parameter is a url about the login page's security check other than the original login page!
