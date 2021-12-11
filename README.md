@@ -8,6 +8,10 @@ Aimed to finish the final task, I have to read tons of article related to web cr
 
 Hope to get those fxxking things done soon! :)
 
-* Phase I： Login Page 
+# Phase I: Login Page
 
-To be continued :(
+* Success to login
+
+**session.post(xx,xx,xx)**:
+
+The first parameter is a url about the login page's security check other than the original login page!
