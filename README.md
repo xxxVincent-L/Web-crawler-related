@@ -19,3 +19,5 @@ The first parameter is a URL about the login page's security check other than th
 Btw, It costs me about an hour to figure out the problem of "**Unable to access '': OpenSSL SSL_read: Connection was reset**"
 
 After searching for blogs regarding this problem, It's still unsolvable. But after I cleaning up those branch thing, is 's finished! :) 
+
+> I don't know why there always be some problem about the pull and push...
