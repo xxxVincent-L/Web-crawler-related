@@ -5,5 +5,6 @@ This repo is related to the web crawler which will be used to the final project 
 
 * Success to login
 
-session.post(xx,xx,xx)
+**session.post(xx,xx,xx)**:
+
 The first parameter is a url about the login page's security check other than the original login page!
