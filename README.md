@@ -15,3 +15,7 @@ Hope to get those fxxking things done soon! :)
 **session.post(xx,xx,xx)**:
 
 The first parameter is a url about the login page's security check other than the original login page!
+
+Btw, It costs me like a hour to figure out the problem of "**Unable to access '': OpenSSL SSL_read: Connection was reset**"
+
+After searching for blogs regarding this problem, It 's still unsolvable. But after I cleaning up those branch thing, is 's finished! :) 
