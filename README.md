@@ -68,7 +68,19 @@ Hope to get those fxxking things done soon! :)
  
 ## Phase Ⅳ: Processed data storage
 
-   > To be continued! :)
+   > Things are going well for me in this afternoon!
+* **Data storage as Excel**
+
+    You have to learn some basical function of the excel in python.
+    ![image.png](https://s2.loli.net/2021/12/12/FMyauQ6jpKVZ8G7.png)
+
+* **Data storage as DB**
+
+    > I make a mistake here that different syntax between javascript and python suck me in.
+                     
+    The DB manipulation is quite simple compared to java, so I just imitate the way I learn from another repository which name is traffic-video-analysis-system.                
+            ![image.png](https://s2.loli.net/2021/12/12/hHTDPubyZdRwapi.png)              
+ 
     
 ---
 
@@ -81,6 +93,15 @@ Hope to get those fxxking things done soon! :)
 * [python object <-> json string](https://blog.csdn.net/tterminator/article/details/63289400)
 
 * [json.dumps -> unicode](https://blog.csdn.net/firefox1/article/details/78331369)
+
+
+**Phase Ⅳ**:
+
+* [python excel](https://blog.csdn.net/liyuanjinglyj/article/details/87895700)
+
+* [db create table -> whether exists](https://blog.csdn.net/weixin_39519554/article/details/110787215)
+
+* [format convert in the sql](https://blog.csdn.net/df0128/article/details/88245607)
 > To be continued :) 
 
 ![Test of pic in md](https://s2.loli.net/2021/12/11/hFjkSlPrNvYVdOM.png)

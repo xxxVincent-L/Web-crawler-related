@@ -1,9 +1,11 @@
 import hashlib
 import json
-
+from pymysql import *
 import muggle_ocr
 import requests
 import getpass
+
+from pandas.tests.io.excel.test_openpyxl import openpyxl
 
 sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
 
@@ -122,16 +124,88 @@ def processData():
     return curriculumList
 
 
+def storeDataAsExcel():
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    ws.append(["课程名",
+               "上课教师",
+               "上课地点",
+               "课程号",
+               "课序号",
+               "上课周次",
+               "上课星期",
+               "学分"])
+
+    curriculumList = processData()
+
+    for course in curriculumList:
+        print(course)
+        ws.append(course)
+    print("课程已经成功添加至Curriculum.xlsx!")
+
+    wb.save('Curriculum.xlsx')  # 保存
+
+
+def storeDataAsDB():
+    db = connect(host='localhost', port=3306, db='mydb', user='vincent', passwd='123456')
+    cursor = db.cursor()
+    curriculumList = processData()
+    sqlOfCreateTable = '''
+    CREATE TABLE IF NOT EXISTS `Curriculum` (
+                                                课程名 varchar(50),
+                                                上课教师 varchar(50),
+                                                上课地点 varchar(50),
+                                                课程号 varchar(50),
+                                                课序号 varchar(50),
+                                                上课周次 varchar(50),
+                                                上课星期 int,
+                                                学分 varchar(50)
+    ) '''
+    # print(sqlOfCreateTable)
+    sqlOfInsertTable = '''insert into curriculum(课程名,
+                                                上课教师,
+                                                上课地点,
+                                                课程号,
+                                                课序号,
+                                                上课周次,
+                                                上课星期,
+                                                学分
+                                                ) values'''
+    # print(sqlOfInsertTable)
+
+    try:
+
+        cursor.execute(sqlOfCreateTable)
+        for course in curriculumList:
+            tempSql = sqlOfInsertTable + "('" + course[0] + "','" + course[1] + "','" + course[2] + "','" + \
+                      course[3] + "','" + course[4] + "','" + course[5] + "'," + str(course[6]) + ",'" + course[
+                          7] + "')"
+            # print(tempSql)
+            cursor.execute(tempSql)
+
+        db.commit()
+        print("课程已经成功添加至数据库的Curriculum表中!")
+        return True
+    except Exception as e:
+        print(e)
+        db.rollback()
+    return False
+
+
+def mainCallOfLogin():
+    while True:
+        if userLogin(session):
+            print("成功了！")
+            getUserClassCurriculum()
+            break
+        else:
+            print("失败了！")
+
 
 if __name__ == '__main__':
     session = requests.session()
-    # while True:
-    #     if userLogin(session):
-    #         print("成功了！")
-    #         getUserClassCurriculum()
-    #         break
-    #     else:
-    #         print("失败了！")
-    processData()
+    mainCallOfLogin()
 
-# test
+    storeDataAsExcel()
+    storeDataAsDB()
