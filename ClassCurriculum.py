@@ -1,4 +1,6 @@
 import hashlib
+import json
+
 import muggle_ocr
 import requests
 import getpass
@@ -8,6 +10,8 @@ sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"
 # login_page = "http://zhjw.scu.edu.cn/login"
 login_interface = "http://zhjw.scu.edu.cn/j_spring_security_check"  # 登录接口
+class_curriculum_url = "http://zhjw.scu.edu.cn/student/teachingResources/classCurriculum/searchCurriculumInfo/callback?planCode=2021-2022-2-1&classCode=193040301"
+
 login_header = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;\
     q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -20,6 +24,7 @@ login_header = {
 }
 
 
+# get user's information
 def userInfo():
     userId = input("请输入你的学号:\n")
     password = input("请输入你的密码:\n")
@@ -36,13 +41,16 @@ def userInfo():
     return userId, password
 
 
-def login(session):
+# user login
+def userLogin(session):
     userId, password = userInfo()
 
     original_captcha = session.get(url=captcha_url, headers=login_header).content
 
     processed_captcha_content = sdk.predict(image_bytes=original_captcha)
-    print(processed_captcha_content)
+
+    # print(processed_captcha_content)
+
     if len(processed_captcha_content) != 4:
         return None
 
@@ -51,25 +59,79 @@ def login(session):
                  "j_captcha": processed_captcha_content}
 
     # 搞错了post的第一个参数 -> 应该是那个需要进行安全判断的地方 而不是登录界面!!!
-    s = session.post(login_interface, headers=login_header, data=post_data)  # Login
+    response = session.post(login_interface, headers=login_header, data=post_data)  # Login
 
-    print(s.text)
+    print(response.text)
 
-    if "欢迎" in s.text:
-        return "success"
+    if "欢迎" in response.text:
+        return True
     else:
-        return "failed"
+        return False
+
+
+# data acquisition
+def getUserClassCurriculum():
+    response = session.get(class_curriculum_url, headers=login_header)
+    class_curriculum_json = json.loads(response.text)
+    # print(class_curriculum_json, type(class_curriculum_json))
+
+    with open("ClassCurriculum.json", "w", encoding='utf-8') as f:
+        json.dump(class_curriculum_json, f, indent=4, ensure_ascii=False)
+
+
+# data process
+def processData():
+    curriculumList = []
+    with open("ClassCurriculum.json", "r", encoding='utf-8') as f:
+        rawData = json.load(f)
+
+    rawDataList = rawData[0]
+    lenOfCurriculum = len(rawDataList)
+
+    for index in range(lenOfCurriculum):
+        tempCourseList = rawDataList[index]
+
+        tempCourseInfo = []
+
+        courseName = tempCourseList["kcm"]
+        tempCourseInfo.append(courseName)
+
+        courseTeacher = tempCourseList["jsm"]
+        tempCourseInfo.append(courseTeacher)
+
+        coursePlace = tempCourseList["xqm"] + tempCourseList["jxlm"] + tempCourseList["jash"]
+        tempCourseInfo.append(coursePlace)
+
+        courseId = tempCourseList["id"]["kch"]
+        tempCourseInfo.append(courseId)
+
+        courseSequenceId = tempCourseList["id"]["kxh"]
+        tempCourseInfo.append(courseSequenceId)
+
+        courseWeek = tempCourseList["zcsm"]
+        tempCourseInfo.append(courseWeek)
+
+        courseDay = tempCourseList["id"]["skxq"]
+        tempCourseInfo.append(courseDay)
+
+        courseCredit = tempCourseList["xf"]
+        tempCourseInfo.append(courseCredit)
+
+        curriculumList.append(tempCourseInfo)
+
+    return curriculumList
+
 
 
 if __name__ == '__main__':
     session = requests.session()
-    while True:
-        if login(session) == "success":
-            print("成功了！")
-            break
-        else:
-            print("失败了！")
+    # while True:
+    #     if userLogin(session):
+    #         print("成功了！")
+    #         getUserClassCurriculum()
+    #         break
+    #     else:
+    #         print("失败了！")
+    processData()
 
-# branch test
-
-# So now everything is ok?
+# test
