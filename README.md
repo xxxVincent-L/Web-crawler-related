@@ -53,10 +53,24 @@ Hope to get those fxxking things done soon! :)
    
 ## Phase Ⅲ: Raw data preprocessor
 
-> To be continued!
 
+
+* **list or dictionary**
+
+    > I made a mistake to upload some private info in the github, then I just searched for some 
+    >articles. Finally with the upgrade of git, everything is better now! :-)
     
+    This part is aimed to process the original data which I get from the Dean's office website.
+    Using a list to store the specific information of courses, while using a outer list to store every course.
+    
+    > Figuring out the structure of the curriculum is a key in this procedure!
+    
+ 
+## Phase Ⅳ: Processed data storage
 
+   > To be continued! :)
+    
+---
 
 ### Reference:
 
