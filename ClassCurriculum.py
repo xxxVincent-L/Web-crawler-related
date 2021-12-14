@@ -4,7 +4,7 @@ from pymysql import *
 import muggle_ocr
 import requests
 import getpass
-
+import re
 from pandas.tests.io.excel.test_openpyxl import openpyxl
 
 sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
@@ -12,8 +12,8 @@ sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"
 # login_page = "http://zhjw.scu.edu.cn/login"
 login_interface = "http://zhjw.scu.edu.cn/j_spring_security_check"  # 登录接口
-class_curriculum_url = "http://zhjw.scu.edu.cn/student/teachingResources/classCurriculum/searchCurriculumInfo/callback?planCode=2021-2022-2-1&classCode=193040301"
-
+raw_class_curriculum_url = "http://zhjw.scu.edu.cn/student/teachingResources/classCurriculum/searchCurriculumInfo/callback?classCode=193040301"
+class_curriculum_url = ""
 login_header = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;\
     q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -72,8 +72,11 @@ def userLogin(session):
 
 
 # data acquisition
-def getUserClassCurriculum():
-    response = session.get(class_curriculum_url, headers=login_header)
+def getUserClassCurriculum(class_curriculum_url):
+    # print(class_curriculum_url)
+    response = session.get(class_curriculum_url)
+    # 可能失败？
+    # print(response.text)
     class_curriculum_json = json.loads(response.text)
     # print(class_curriculum_json, type(class_curriculum_json))
 
@@ -192,12 +195,39 @@ def storeDataAsDB():
         db.rollback()
     return False
 
+# choose the semester your wanna query
+def chooseSemester():
+    global plancode
+    semester = input("你想查看哪个学期的课表？（标准输入为年份-季节：2021-秋）")
+
+    infoOfSemester = re.split(r'\-', semester)
+    year = infoOfSemester[0]
+    season = infoOfSemester[1]
+    print(year)
+    seasonToInt = {"秋": 1, "春": 2}
+    tempYear = 0
+    if '秋' in season:
+        tempYear = int(year) + 1
+        print(tempYear)
+        plancode = str(year) + "-" + str(tempYear) + "-" + str(seasonToInt[season]) + "-1"
+        print(plancode)
+    elif '春' in season:
+        tempYear = int(year) - 1
+        print(tempYear)
+        plancode = str(tempYear) + "-" + str(year) + "-" + str(seasonToInt[season]) + "-1"
+        print(plancode)
+
+    class_curriculum_url = raw_class_curriculum_url + "&planCode=" + plancode
+    print(class_curriculum_url)
+
+    return class_curriculum_url
+
 
 def mainCallOfLogin():
     while True:
         if userLogin(session):
             print("成功了！")
-            getUserClassCurriculum()
+            getUserClassCurriculum(chooseSemester())
             break
         else:
             print("失败了！")
@@ -206,6 +236,5 @@ def mainCallOfLogin():
 if __name__ == '__main__':
     session = requests.session()
     mainCallOfLogin()
-
     storeDataAsExcel()
     storeDataAsDB()
