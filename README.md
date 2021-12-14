@@ -81,7 +81,15 @@ Hope to get those fxxking things done soon! :)
     The DB manipulation is quite simple compared to java, so I just imitate the way I learn from another repository which name is traffic-video-analysis-system.                
             ![image.png](https://s2.loli.net/2021/12/12/hHTDPubyZdRwapi.png)              
  
-    
+## Phase Ⅴ (Optional): Choose the semester 
+
+   > It's optional for the final project and it remains some problems like you can't distinguish different semester's class in the db table.
+
+* **Regex**: It's unnecessary to use regex here actually, but 
+for the purpose of self teach, whatever :)
+
+* **Annotation & debug**: It's vital in the whole procedure, "step by step"
+
 ---
 
 ### Reference:
