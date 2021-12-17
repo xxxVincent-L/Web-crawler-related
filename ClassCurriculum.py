@@ -9,11 +9,14 @@ from pandas.tests.io.excel.test_openpyxl import openpyxl
 
 sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
 
+# url preparation
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"
 # login_page = "http://zhjw.scu.edu.cn/login"
 login_interface = "http://zhjw.scu.edu.cn/j_spring_security_check"  # 登录接口
 raw_class_curriculum_url = "http://zhjw.scu.edu.cn/student/teachingResources/classCurriculum/searchCurriculumInfo/callback?classCode=193040301"
 class_curriculum_url = ""
+
+# header
 login_header = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;\
     q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -31,21 +34,23 @@ def userInfo():
     userId = input("请输入你的学号:\n")
     password = input("请输入你的密码:\n")
 
-    # For test quickly
+    # For testing quick
     # userId = "2019141450020"
     # password = ""
 
     # Hide what you input in the terminal
     # password = getpass.getpass('请输入你的密码:\n')
 
-    print(userId)
-    print(password)
+    # print(userId)
+    # print(password)
     return userId, password
 
 
 # user login
 def userLogin(session):
-    userId, password = userInfo()
+    userId, password = userInfo()  # get the information of users
+
+    userPwd = hashlib.md5(password.strip('\n').encode()).hexdigest()  # Encryption
 
     original_captcha = session.get(url=captcha_url, headers=login_header).content
 
@@ -56,14 +61,15 @@ def userLogin(session):
     if len(processed_captcha_content) != 4:
         return None
 
+    # post data preparation
     post_data = {"j_username": userId,
-                 "j_password": hashlib.md5(password.strip('\n').encode()).hexdigest(),
+                 "j_password": userPwd,
                  "j_captcha": processed_captcha_content}
 
     # 搞错了post的第一个参数 -> 应该是那个需要进行安全判断的地方 而不是登录界面!!!
     response = session.post(login_interface, headers=login_header, data=post_data)  # Login
 
-    print(response.text)
+    # print(response.text)
 
     if "欢迎" in response.text:
         return True
@@ -73,12 +79,9 @@ def userLogin(session):
 
 # data acquisition
 def getUserClassCurriculum(class_curriculum_url):
-    # print(class_curriculum_url)
-    response = session.get(class_curriculum_url)
-    # 可能失败？
-    # print(response.text)
-    class_curriculum_json = json.loads(response.text)
-    # print(class_curriculum_json, type(class_curriculum_json))
+    response = session.get(class_curriculum_url, headers=login_header)
+
+    class_curriculum_json = json.loads(response.content.decode("utf-8"))
 
     with open("ClassCurriculum.json", "w", encoding='utf-8') as f:
         json.dump(class_curriculum_json, f, indent=4, ensure_ascii=False)
@@ -127,6 +130,7 @@ def processData():
     return curriculumList
 
 
+# store data as a excel table
 def storeDataAsExcel():
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -147,10 +151,12 @@ def storeDataAsExcel():
         ws.append(course)
     print("课程已经成功添加至Curriculum.xlsx!")
 
-    wb.save('Curriculum.xlsx')  # 保存
+    wb.save('Curriculum.xlsx')  # Save
 
 
+# store data as a DB's table
 def storeDataAsDB():
+    # If u wanna use the code, this part is what you should change.
     db = connect(host='localhost', port=3306, db='mydb', user='vincent', passwd='123456')
     cursor = db.cursor()
     curriculumList = processData()
@@ -195,6 +201,7 @@ def storeDataAsDB():
         db.rollback()
     return False
 
+
 # choose the semester your wanna query
 def chooseSemester():
     global plancode
@@ -203,19 +210,16 @@ def chooseSemester():
     infoOfSemester = re.split(r'\-', semester)
     year = infoOfSemester[0]
     season = infoOfSemester[1]
-    print(year)
+
     seasonToInt = {"秋": 1, "春": 2}
     tempYear = 0
     if '秋' in season:
         tempYear = int(year) + 1
-        print(tempYear)
         plancode = str(year) + "-" + str(tempYear) + "-" + str(seasonToInt[season]) + "-1"
-        print(plancode)
+
     elif '春' in season:
         tempYear = int(year) - 1
-        print(tempYear)
         plancode = str(tempYear) + "-" + str(year) + "-" + str(seasonToInt[season]) + "-1"
-        print(plancode)
 
     class_curriculum_url = raw_class_curriculum_url + "&planCode=" + plancode
     print(class_curriculum_url)
@@ -223,6 +227,7 @@ def chooseSemester():
     return class_curriculum_url
 
 
+# The main call function of user's login
 def mainCallOfLogin():
     while True:
         if userLogin(session):
@@ -235,6 +240,9 @@ def mainCallOfLogin():
 
 if __name__ == '__main__':
     session = requests.session()
+
     mainCallOfLogin()
+
+    # storage
     storeDataAsExcel()
     storeDataAsDB()
