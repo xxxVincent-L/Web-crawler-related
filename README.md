@@ -110,6 +110,29 @@ for the purpose of self teach, whatever :)
 * [db create table -> whether exists](https://blog.csdn.net/weixin_39519554/article/details/110787215)
 
 * [format convert in the sql](https://blog.csdn.net/df0128/article/details/88245607)
-> To be continued :) 
+
+**Phase Ⅴ**:
+
+* [decode's problem](https://blog.csdn.net/weixin_33737134/article/details/94531856)
+
+* [Github's commit regulation Ⅰ](https://www.cnblogs.com/jinzhenzong/p/13274323.html)
+
+* [Github's commit regulation Ⅱ](https://blog.csdn.net/weixin_30399055/article/details/98150442)
+
+
+
+# Summary
+
+Up to now, this project is nearly accomplished! And I experience the whole web crawler's procedure.
+
+In the process, I've learned a lot from **github**.
+
+Hope to get more knowledge in the future :-)
+
+* Future work:
+
+    Maybe using data visualization in the relevant project!
+
+**Bye~**
 
 ![Test of pic in md](https://s2.loli.net/2021/12/11/hFjkSlPrNvYVdOM.png)
